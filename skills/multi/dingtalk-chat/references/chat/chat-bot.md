@@ -135,12 +135,12 @@ dws chat message send-by-webhook --token <webhook-token> --title "test" --conten
 
 | 命令 | 用途 | 必填参数 |
 |------|------|----------|
-| `group members add-bot` | 将自定义机器人加入群 | `--id` `--robot-code` |
+| `group members add-bot` | 将自定义机器人加入群 | `--conversation-id` `--robot-code` |
 | `group members remove-bot` | 从群移除机器人 | `--id` `--bot-id` |
 | `+chat-bots` | 查看群内机器人列表 | `--group <群名或openConversationId>`；自然群名内部唯一解析 |
 
 ```bash
-dws chat group members add-bot --id <openConversationId> --robot-code <robot-code>
+dws chat group members add-bot --conversation-id <openConversationId> --robot-code <robot-code>
 dws chat +chat-bots --group "项目群"
 dws chat group members remove-bot --id <openConversationId> --bot-id <openBotId>
 ```
@@ -159,7 +159,7 @@ dws chat message recall-by-bot --robot-code <robot-code> --group <openConversati
 
 ```bash
 dws chat bot search --name "日报" --format json
-dws chat group members add-bot --id <openConversationId> --robot-code <robot-code> --format json
+dws chat group members add-bot --conversation-id <openConversationId> --robot-code <robot-code> --format json
 dws chat +messages-send --as bot --robot-code <robot-code> --group <openConversationId> --title "通知" --text "内容" --format json
 ```
 

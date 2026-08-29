@@ -618,13 +618,13 @@ Agent 安装 dws skill 后，仅依据 skill 提供的参考文档，将自然�
 
 **chat_chat_group_members_add_bot_001**
 - Prompt: 将机器人 robot001 添加到群 conv123
-- Expected: `dws chat group members add-bot --id conv123 --robot-code robot001 --format json`
-- Flags: `--id` = `conv123`, `--robot-code` = `robot001`
+- Expected: `dws chat group members add-bot --conversation-id conv123 --robot-code robot001 --format json`
+- Flags: `--conversation-id` = `conv123`, `--robot-code` = `robot001`
 
 **chat_chat_group_members_add_bot_002**
 - Prompt: 把 botXYZ 机器人拉进 convABC 这个群
-- Expected: `dws chat group members add-bot --id convABC --robot-code botXYZ --format json`
-- Flags: `--id` = `convABC`, `--robot-code` = `botXYZ`
+- Expected: `dws chat group members add-bot --conversation-id convABC --robot-code botXYZ --format json`
+- Flags: `--conversation-id` = `convABC`, `--robot-code` = `botXYZ`
 
 #### `dws chat group members remove`
 

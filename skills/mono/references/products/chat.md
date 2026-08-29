@@ -77,10 +77,10 @@ Flags:
 Usage:
   dws chat group members add-bot [flags]
 Example:
-  dws chat group members add-bot --robot-code <robot-code> --id <openconversation_id>
+  dws chat group members add-bot --robot-code <robot-code> --conversation-id <openconversation_id>
 Flags:
-      --id string           群聊 openConversationId (必填)
-      --robot-code string   机器人 Code (必填)
+      --conversation-id string   群聊 openConversationId (必填)
+      --robot-code string        机器人 Code (必填)
 ```
 
 #### 从群内移除机器人 — 将指定机器人从群聊中移除，需要群管理员或群主权限
@@ -90,7 +90,7 @@ Usage:
 Example:
   dws chat group members remove-bot --id <openConversationId> --bot-id <openBotId>
   # 查询群 ID: dws chat search --query "群名"
-  # 查询群内机器人: dws chat group bots --group <openConversationId>
+  # 查询群内机器人: dws chat group bots --conversation-id <openConversationId>
 Flags:
       --id string       群聊 openConversationId (必填)
       --bot-id string   机器人 openBotId (必填)
@@ -277,10 +277,10 @@ Flags:
 Usage:
   dws chat group bots [flags]
 Example:
-  dws chat group bots --group <openConversationId>
+  dws chat group bots --conversation-id <openConversationId>
   # 查询群 ID: dws chat search --query "群名"
 Flags:
-      --group string   群聊 openConversationId (必填)
+      --conversation-id string   群聊 openConversationId 或需唯一解析的群名 (必填)
 ```
 
 #### 解散群聊 — 解散指定群聊，操作不可逆，需要群主权限
@@ -742,7 +742,7 @@ Flags:
 群聊传 --conversation-id；单聊可传 --users、--open-dingtalk-ids 或两者组合。--conversation-id 不能与单聊目标同时指定。默认发送 Markdown，普通发送必须同时使用 --title 和 --text；公网图片 URL 使用 --msg-type image --image-url <图片 URL>；本地图片和其他本地文件一样使用 --msg-type file --file-path <本地路径>，CLI 会完成上传并按文件附件发送。群聊时可选 --at-user-ids 或 --at-open-dingtalk-ids @指定成员。机器人群聊 Markdown 引用回复同时传 --reply <openMessageId> 和 --ref-sender <senderOpenDingTalkId>，可省略 --title 由 CLI 从正文生成；单聊、图片和文件不支持引用回复。
 如果用户明确要求"用机器人/机器人身份/robot"发送，必须使用本命令，严禁改用 `chat message send` 以当前用户身份发送。
 
-**重要**：机器人发群消息前，必须确认该机器人已在目标群中。若机器人不在群内会报错"机器人不存在"，需先执行 `dws chat group members add-bot --id <openConversationId> --robot-code <robot-code>` 将机器人加入群聊后再发送。
+**重要**：机器人发群消息前，必须确认该机器人已在目标群中。若机器人不在群内会报错"机器人不存在"，需先执行 `dws chat group members add-bot --conversation-id <openConversationId> --robot-code <robot-code>` 将机器人加入群聊后再发送。
 ```
 Usage:
   dws chat message send-by-bot [flags]
@@ -2373,7 +2373,7 @@ dws chat message send-by-bot --robot-code <robot-code> --group <openconversation
   --title "通知" --text "内容" --format json
 
 # Step 3: 邀请机器人进群
-dws chat group members add-bot --group <openconversation_id> --robot-code <robot-code>
+dws chat group members add-bot --conversation-id <openconversation_id> --robot-code <robot-code>
 
 # Step 4: 重新发送
 dws chat message send-by-bot --robot-code <robot-code> --group <openconversation_id> \

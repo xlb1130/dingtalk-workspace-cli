@@ -648,6 +648,114 @@ func TestCrossPlatformCoverageChatGroupAuditJoinValidationUsesCanonicalAndAliasP
 	}
 }
 
+func TestCrossPlatformCoverageChatGroupBotsMigrationContract(t *testing.T) {
+	previousDeps, previousArgs := deps, os.Args
+	os.Args = []string{"dws", "chat"}
+	t.Cleanup(func() { deps, os.Args = previousDeps, previousArgs })
+
+	for _, tc := range []struct {
+		name        string
+		args        []string
+		wantArgs    map[string]any
+		wantErrPart string
+	}{
+		{
+			name:     "canonical conversation-id",
+			args:     []string{"--conversation-id=cid123456789"},
+			wantArgs: map[string]any{"openConversationId": "cid123456789"},
+		},
+		{
+			name:     "legacy group alias",
+			args:     []string{"--group=cid123456789"},
+			wantArgs: map[string]any{"openConversationId": "cid123456789"},
+		},
+		{
+			name:     "both same value",
+			args:     []string{"--conversation-id=cid123456789", "--group=cid123456789"},
+			wantArgs: map[string]any{"openConversationId": "cid123456789"},
+		},
+		{
+			name:        "both different values conflict",
+			args:        []string{"--conversation-id=cidA123456789", "--group=cidB123456789"},
+			wantErrPart: "conflicts",
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			caller := &scriptedToolCaller{}
+			err := runChatCoverageCommand(t, caller, append([]string{"group", "bots"}, tc.args...)...)
+			if tc.wantErrPart != "" {
+				if err == nil || !strings.Contains(err.Error(), tc.wantErrPart) {
+					t.Fatalf("error = %v, want %q", err, tc.wantErrPart)
+				}
+				if caller.calls != 0 {
+					t.Fatalf("conflicting spellings still made %d tool calls", caller.calls)
+				}
+				return
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			if caller.calls != 1 || caller.server != "bot" || caller.tool != "list_group_bots" || !reflect.DeepEqual(caller.args, tc.wantArgs) {
+				t.Fatalf("call = count:%d server:%q tool:%q args:%#v, want %#v", caller.calls, caller.server, caller.tool, caller.args, tc.wantArgs)
+			}
+		})
+	}
+}
+
+func TestCrossPlatformCoverageChatGroupMembersAddBotMigrationContract(t *testing.T) {
+	previousDeps, previousArgs := deps, os.Args
+	os.Args = []string{"dws", "chat"}
+	t.Cleanup(func() { deps, os.Args = previousDeps, previousArgs })
+
+	for _, tc := range []struct {
+		name        string
+		args        []string
+		wantArgs    map[string]any
+		wantErrPart string
+	}{
+		{
+			name:     "canonical conversation-id",
+			args:     []string{"--conversation-id=cid123456789", "--robot-code=robot-1"},
+			wantArgs: map[string]any{"robotCode": "robot-1", "openConversationId": "cid123456789"},
+		},
+		{
+			name:     "legacy id alias",
+			args:     []string{"--id=cid123456789", "--robot-code=robot-1"},
+			wantArgs: map[string]any{"robotCode": "robot-1", "openConversationId": "cid123456789"},
+		},
+		{
+			name:     "legacy group alias",
+			args:     []string{"--group=cid123456789", "--robot-code=robot-1"},
+			wantArgs: map[string]any{"robotCode": "robot-1", "openConversationId": "cid123456789"},
+		},
+		{
+			name:        "both different values conflict",
+			args:        []string{"--conversation-id=cidA123456789", "--id=cidB123456789", "--robot-code=robot-1"},
+			wantErrPart: "conflicts",
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			caller := &scriptedToolCaller{}
+			err := runChatCoverageCommand(t, caller, append([]string{"group", "members", "add-bot"}, tc.args...)...)
+			if tc.wantErrPart != "" {
+				if err == nil || !strings.Contains(err.Error(), tc.wantErrPart) {
+					t.Fatalf("error = %v, want %q", err, tc.wantErrPart)
+				}
+				if caller.calls != 0 {
+					t.Fatalf("conflicting spellings still made %d tool calls", caller.calls)
+				}
+				return
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			if caller.calls != 1 || caller.server != "bot" || caller.tool != "add_robot_to_group" || !reflect.DeepEqual(caller.args, tc.wantArgs) {
+				t.Fatalf("call = count:%d server:%q tool:%q args:%#v, want %#v", caller.calls, caller.server, caller.tool, caller.args, tc.wantArgs)
+			}
+		})
+	}
+}
+
 func TestCrossPlatformCoverageChatIMIDMigrationRequiredFlagErrors(t *testing.T) {
 	previousDeps, previousArgs := deps, os.Args
 	os.Args = []string{"dws", "chat"}

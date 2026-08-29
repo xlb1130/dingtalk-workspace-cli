@@ -799,7 +799,7 @@
 **chat_chat_group_members_add_bot_001** ✅ PASS
 
 - Prompt: 将机器人 robot001 添加到群 conv123
-- Expected: `dws chat group members add-bot --id conv123 --robot-code robot001 --format json`
+- Expected: `dws chat group members add-bot --conversation-id conv123 --robot-code robot001 --format json`
 - Skill Reference: references/products/chat.md
 - Command path: PASS (chat group members add-bot)
 - Flags: PASS (2 flags validated)
@@ -807,7 +807,7 @@
 **chat_chat_group_members_add_bot_002** ✅ PASS
 
 - Prompt: 把 botXYZ 机器人拉进 convABC 这个群
-- Expected: `dws chat group members add-bot --id convABC --robot-code botXYZ --format json`
+- Expected: `dws chat group members add-bot --conversation-id convABC --robot-code botXYZ --format json`
 - Skill Reference: references/products/chat.md
 - Command path: PASS (chat group members add-bot)
 - Flags: PASS (2 flags validated)
