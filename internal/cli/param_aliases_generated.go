@@ -4205,12 +4205,9 @@ var generatedParamAliases = []ParamAliasEntry{
 	{
 		CLIPath: "chat group bots",
 		Aliases: map[string]string{
-			"chat":                 "group",
-			"chat-id":              "group",
-			"conversation-id":      "group",
-			"open-conversation-id": "group",
+			"chat-id": "conversation-id",
 		},
-		Blocked: []string{"conversation-ids", "dest-conversation-id", "group-id", "group-ids", "group-name", "id", "name", "open-conversation-ids", "source", "src-conversation-id", "target"},
+		Blocked: []string{"conversation-ids", "dest-conversation-id", "group-id", "group-ids", "group-name", "name", "open-conversation-ids", "source", "src-conversation-id", "target"},
 	},
 	{
 		CLIPath: "chat group create",
@@ -4259,12 +4256,8 @@ var generatedParamAliases = []ParamAliasEntry{
 	{
 		CLIPath: "chat group members add-bot",
 		Aliases: map[string]string{
-			"chat":                 "id",
-			"chat-id":              "id",
-			"conversation-id":      "id",
-			"group":                "id",
-			"open-conversation-id": "id",
-			"robot":                "robot-code",
+			"chat-id": "conversation-id",
+			"robot":   "robot-code",
 		},
 		Blocked: []string{"bot-code", "bot-id", "conversation-ids", "dest-conversation-id", "group-id", "group-ids", "group-name", "name", "open-bot-id", "open-conversation-ids", "robot-id", "source", "src-conversation-id", "target"},
 	},

@@ -1541,16 +1541,16 @@ func TestDeliveryCatalogChatParamDeclsFrom87910880Reviewed(t *testing.T) {
 		t.Fatal(err)
 	}
 	groupBotsParams := schemaMap(groupBots["parameters"])
-	group := groupBotsParams["group"]
-	if group == nil {
-		t.Fatal("chat group bots missing public legacy --group")
+	conv := groupBotsParams["conversation-id"]
+	if conv == nil {
+		t.Fatal("chat group bots missing public canonical --conversation-id")
 	}
-	if group["property"] != "openConversationId" {
-		t.Fatalf("chat group bots --group property = %#v, want openConversationId", group["property"])
+	if conv["property"] != "openConversationId" {
+		t.Fatalf("chat group bots --conversation-id property = %#v, want openConversationId", conv["property"])
 	}
-	for _, migrated := range []string{"conversation-id", "group-name"} {
-		if _, ok := groupBotsParams[migrated]; ok {
-			t.Fatalf("chat group bots unexpectedly publishes migrated --%s", migrated)
+	for _, legacy := range []string{"group", "group-name"} {
+		if _, ok := groupBotsParams[legacy]; ok {
+			t.Fatalf("chat group bots unexpectedly publishes hidden alias --%s", legacy)
 		}
 	}
 }

@@ -48,11 +48,9 @@ func TestCrossPlatformCoverageChatGroupAuditJoinValidationAliasContract(t *testi
 }
 
 func TestCrossPlatformCoverageChatGroupAuditJoinValidationRestoreRequiredNoop(t *testing.T) {
-	restoreChatGroupBotsLegacyRequired(nil)
 	restoreChatPendingMigrationCanonicalRequired(nil)
 	root := &cobra.Command{Use: "chat"}
 	root.AddCommand(&cobra.Command{Use: "other"})
-	restoreChatGroupBotsLegacyRequired(root)
 	restoreChatPendingMigrationCanonicalRequired(root)
 }
 
@@ -62,15 +60,22 @@ func TestCrossPlatformCoverageChatGroupBotsKeepsLegacyGroupFlag(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	group := leaf.Flags().Lookup("group")
-	if group == nil || group.Hidden {
-		t.Fatalf("group flag = %#v, want visible legacy flag", group)
+	canonical := leaf.Flags().Lookup("conversation-id")
+	if canonical == nil || canonical.Hidden {
+		t.Fatalf("conversation-id flag = %#v, want visible canonical", canonical)
 	}
-	if got := group.Annotations[cobra.BashCompOneRequiredFlag]; len(got) == 0 || got[0] != "true" {
-		t.Fatalf("group required annotation = %#v, want true", got)
+	if got := canonical.Annotations[cobra.BashCompOneRequiredFlag]; len(got) == 0 || got[0] != "true" {
+		t.Fatalf("conversation-id required annotation = %#v, want true", got)
 	}
-	if leaf.Flags().Lookup("conversation-id") != nil {
-		t.Fatalf("chat group bots still exposes migrated --conversation-id")
+	legacy := leaf.Flags().Lookup("group")
+	if legacy == nil || !legacy.Hidden {
+		t.Fatalf("group flag = %#v, want hidden compatibility alias", legacy)
+	}
+	if got := legacy.Annotations[runtimeannotate.AnnotationFlagAliasOf]; len(got) != 1 || got[0] != "conversation-id" {
+		t.Fatalf("group alias_of annotation = %#v", got)
+	}
+	if got := legacy.Annotations[cobra.BashCompOneRequiredFlag]; len(got) != 0 {
+		t.Fatalf("hidden group alias kept required annotation: %#v", got)
 	}
 	if leaf.Flags().Lookup("group-name") != nil {
 		t.Fatalf("chat group bots still exposes migrated --group-name")
@@ -289,7 +294,7 @@ func TestCrossPlatformCoverageChatReactionHelpKeepsManifestExternalAliasesVisibl
 	}
 }
 
-func TestCrossPlatformCoverageChatGroupBotsHelpKeepsLegacyGroup(t *testing.T) {
+func TestCrossPlatformCoverageChatGroupBotsHelpHidesLegacyGroup(t *testing.T) {
 	cmd := newChatCommand()
 	var output bytes.Buffer
 	cmd.SetOut(&output)
@@ -300,13 +305,14 @@ func TestCrossPlatformCoverageChatGroupBotsHelpKeepsLegacyGroup(t *testing.T) {
 	}
 
 	help := output.String()
-	if !strings.Contains(help, "--group string") {
-		t.Fatalf("chat group bots help missing visible --group:\n%s", help)
+	if !strings.Contains(help, "--conversation-id string") {
+		t.Fatalf("chat group bots help missing visible --conversation-id:\n%s", help)
 	}
-	for _, hidden := range []string{"--conversation-id", "--group-name"} {
-		if strings.Contains(help, hidden) {
-			t.Fatalf("chat group bots help exposes migrated flag %s:\n%s", hidden, help)
-		}
+	if !strings.Contains(help, "--conversation-id <openConversationId>") {
+		t.Fatalf("chat group bots help examples missing --conversation-id:\n%s", help)
+	}
+	if strings.Contains(help, "--group") {
+		t.Fatalf("chat group bots help exposes legacy --group/--group-name:\n%s", help)
 	}
 }
 
